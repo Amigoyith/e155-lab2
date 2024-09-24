@@ -1,5 +1,12 @@
+// seven_segdisplay.sv
+// Amy Liu
+// amyliu01@g.hmc.edu
+// 9/1/24
+//decoder lookuptable for
+//the 4 bit switch combinations mapping
+//to 7 segment led display
+
 module seven_segdisplay(
-input logic clk,
 input logic reset,
 input logic [3:0] s,
 output logic [6:0] seg
