@@ -16,40 +16,31 @@ logic freq_switch;
 logic int_osc;
 logic [11:0] mux_counter;
 logic [3:0] cur_num;
-	
-  always_ff @(posedge int_osc) begin
+
+    always_ff @(posedge int_osc) begin
         if (!reset)
             mux_counter <= 0;
         else
             mux_counter <= mux_counter + 1;
     end
-	
+
+    assign freq_switch = mux_counter[11];
     seven_segdisplay decoder (
         .clk(clk),
         .reset(reset),
         .s(cur_num),
         .seg(seg)
     );
-	
-	  HSOSC #(.CLKHF_DIV(2'b01)) 
+    seg_select seg_select (
+        .freq_switch(freq_switch),
+        .s1(s1),
+        .s2(s2),
+        .cur_num(cur_num),
+        .anode(anode)
+    );
+    HSOSC #(.CLKHF_DIV(2'b01)) 
          hf_osc (.CLKHFPU(1'b1), .CLKHFEN(1'b1), .CLKHF(int_osc));
-		 
-assign freq_switch = mux_counter[11]; 	 
-//assign number to display at time cycle
-    always_comb begin
-        if (freq_switch)
-cur_num = s1;
-        else
-            cur_num = s2;
-end
 
- //At time cycles, turn one annode for displaying 1st or 2nd digit
-    always_comb begin
-        if (freq_switch) 
-	anode = 2'b01;
-else 
-	anode = 2'b10; 
-	end
-    
+    // Sum output
     assign sum = s1 + s2;
 endmodule
